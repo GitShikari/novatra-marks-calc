@@ -51,25 +51,44 @@ button:hover {
 }
 
 #questionNavigator div {
-  width: 40px;
-  height: 40px;
-  background-color: #eef1f5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-block;
+  padding: 10px 16px;
+  margin: 5px;
   border-radius: 10px;
-  font-size: 16px;
   cursor: pointer;
-  transition: background 0.3s;
+  font-weight: bold;
+  font-family: 'Segoe UI', sans-serif;
+  min-width: 36px;
+  text-align: center;
+  transition: 0.2s;
 }
 
 #questionNavigator div:hover {
   background-color: #dbe3ee;
 }
 
-#questionNavigator .active {
-  background-color: #f5d7b2;
-  font-weight: bold;
+.navigator-unvisited {
+  background-color: #f1f6fd;
+  color: #1d2c4c;
+}
+
+.navigator-unanswered {
+  background-color: #f4e0c5;
+  color: #1d2c4c;
+}
+
+.navigator-correct {
+  background-color: #9de5e1;
+  color: #1d2c4c;
+}
+
+.navigator-incorrect {
+  background-color: #f4bbbb;
+  color: #1d2c4c;
+}
+
+.navigator-active {
+  border: 2px solid #324cdd;
 }
 
 label {
