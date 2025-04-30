@@ -2,8 +2,8 @@ let questions = [];
 let currentQuestion = 0;
 
 function startTest() {
-  const title = document.getElementById("title").value;
-  const count = parseInt(document.getElementById("count").value);
+  const title = document.getElementById("topicName").value.trim();
+  const count = parseInt(document.getElementById("questionCount").value);
 
   if (!title || count <= 0) {
     alert("Please enter valid inputs");
