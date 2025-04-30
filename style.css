@@ -92,8 +92,21 @@ canvas {
   display: block;
 }
 
-#resultChart {
+#chartContainer {
   width: 200px;
   height: 200px;
   margin: 0 auto;
+  position: relative;
 }
+
+#resultChart {
+  width: 100% !important;
+  height: 100% !important;
+}
+#resultContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
