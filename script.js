@@ -71,9 +71,10 @@ function submitTest() {
   let correct = answers.filter(a => a === "correct").length;
   let incorrect = answers.filter(a => a === "incorrect").length;
   let unanswered = answers.filter(a => a === "unanswered").length;
-
+  let total = correct+incorrect+unanswered;
+  let attempt = correct+incorrect;
   let score = correct * 4 - incorrect;
-  let accuracy = ((correct / totalQuestions) * 100).toFixed(2);
+  let accuracy = ((correct / attempt) * 100).toFixed(2);
 
   document.getElementById("testContainer").classList.add("hidden");
   document.getElementById("resultContainer").classList.remove("hidden");
@@ -106,7 +107,7 @@ function submitTest() {
   const CHAT_ID = "8024677797";          // 🔁 Replace with your Telegram user ID
   const topic = document.getElementById("testTitle").textContent;
 
-  const message = `🧾 *Test Result: ${topic}*\n✅ Score: ${score}\n📊 Accuracy: ${accuracy}%`;
+  const message = `🧾 *Test Result: ${topic}*\n✅ Score: ${score}\n📊 Accuracy: ${accuracy}%\n🔢 Total: ${total}\n☑️ Correct: ${correct}\n❌ Incorrect: ${incorrect}\n🎡 Unanswered: ${unanswered}`;
 
   fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
     method: "POST",
