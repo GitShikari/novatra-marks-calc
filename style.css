@@ -3,23 +3,26 @@ body {
   background: #f5f7fa;
   color: #333;
   margin: 0;
-  padding: 20px;
-  text-align: center;
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
 }
 
 .container {
   background: white;
-  max-width: 600px;
-  margin: auto;
-  padding: 30px;
+  width: 600px;
+  padding: 40px 30px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
 }
 
 input[type="text"],
 input[type="number"] {
-  padding: 8px;
-  margin: 10px;
+  width: 80%;
+  padding: 10px;
+  margin: 15px 0;
+  font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 6px;
 }
@@ -28,11 +31,12 @@ button {
   background-color: #4a90e2;
   color: white;
   border: none;
-  padding: 10px 18px;
-  margin: 10px;
+  padding: 12px 20px;
+  margin: 10px 5px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 15px;
+  min-width: 100px;
 }
 
 button:hover {
@@ -42,19 +46,25 @@ button:hover {
 #questionNavigator {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin: 20px 0;
 }
 
 #questionNavigator div {
-  width: 35px;
-  height: 35px;
+  width: 40px;
+  height: 40px;
   background-color: #eef1f5;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
+  border-radius: 10px;
+  font-size: 16px;
   cursor: pointer;
+  transition: background 0.3s;
+}
+
+#questionNavigator div:hover {
+  background-color: #dbe3ee;
 }
 
 #questionNavigator .active {
@@ -62,10 +72,22 @@ button:hover {
   font-weight: bold;
 }
 
+label {
+  display: block;
+  margin: 10px 0;
+  font-size: 16px;
+}
+
+.buttons {
+  margin-top: 20px;
+}
+
 .hidden {
   display: none;
 }
 
 canvas {
-  margin-top: 20px;
+  max-width: 250px;
+  margin: 20px auto 0;
+  display: block;
 }
