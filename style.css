@@ -45,13 +45,19 @@ button:hover {
 
 #questionNavigator {
   display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin: 20px 0;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-start;
+  max-width: 300px; /* Adjust width as needed */
 }
+
+
+
 
 #questionNavigator div {
   display: inline-block;
+  flex: 0 0 calc(25% - 10px); /* Four per row with spacing */
+  text-align: center;
   padding: 10px 16px;
   margin: 5px;
   border-radius: 10px;
