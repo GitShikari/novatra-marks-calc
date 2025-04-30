@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>novatra: marks calculator</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container" id="setup">
+    <h1>novatra: marks calculator</h1>
+    <label>Test Topic Name: <input type="text" id="topicName" /></label>
+    <label>Number of Questions: <input type="number" id="questionCount" min="1" /></label>
+    <button onclick="startTest()">Start Test</button>
+  </div>
+
+  <div class="container hidden" id="testContainer">
+    <h2 id="testTitle"></h2>
+    <div id="questionNavigator"></div>
+    <div id="questionBox">
+      <p id="questionLabel"></p>
+      <label><input type="radio" name="answer" value="correct" /> Correct</label>
+      <label><input type="radio" name="answer" value="incorrect" /> Incorrect</label>
+      <label><input type="radio" name="answer" value="unanswered" /> Unanswered</label>
+    </div>
+    <div class="buttons">
+      <button onclick="prevQuestion()">Back</button>
+      <button onclick="nextQuestion()">Next</button>
+      <button onclick="submitTest()">Submit</button>
+    </div>
+  </div>
+
+  <div class="container hidden" id="resultContainer">
+    <h2>Results</h2>
+    <p id="scoreText"></p>
+    <p id="accuracyText"></p>
+    <canvas id="resultChart"></canvas>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
