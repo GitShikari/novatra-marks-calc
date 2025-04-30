@@ -1,94 +1,112 @@
-let questions = [];
+let answers = [];
 let currentQuestion = 0;
+let totalQuestions = 0;
 
 function startTest() {
-  const title = document.getElementById("topicName").value.trim();
-  const count = parseInt(document.getElementById("questionCount").value);
+  const topic = document.getElementById("topicName").value.trim();
+  totalQuestions = parseInt(document.getElementById("questionCount").value);
 
-  if (!title || count <= 0) {
-    alert("Please enter valid inputs");
+  if (!topic || isNaN(totalQuestions) || totalQuestions < 1) {
+    alert("Please enter a valid topic name and number of questions.");
     return;
   }
 
-  questions = Array.from({ length: count }, () => ({ answer: "unanswered" }));
+  answers = Array(totalQuestions).fill("unanswered");
+  document.getElementById("setup").classList.add("hidden");
+  document.getElementById("testContainer").classList.remove("hidden");
+  document.getElementById("testTitle").textContent = topic;
 
-  document.getElementById("inputSection").classList.add("hidden");
-  document.getElementById("testSection").classList.remove("hidden");
-  document.getElementById("testTitle").textContent = title;
-
-  createNavigator(count);
-  loadQuestion(0);
+  renderNavigator();
+  loadQuestion();
 }
 
-function createNavigator(count) {
-  const nav = document.getElementById("questionNavigator");
-  nav.innerHTML = "";
-  for (let i = 0; i < count; i++) {
-    const btn = document.createElement("div");
-    btn.textContent = i + 1;
-    btn.onclick = () => loadQuestion(i);
-    nav.appendChild(btn);
+function renderNavigator() {
+  const navigator = document.getElementById("questionNavigator");
+  navigator.innerHTML = "";
+  for (let i = 0; i < totalQuestions; i++) {
+    const el = document.createElement("div");
+    el.textContent = i + 1;
+    if (i === currentQuestion) el.classList.add("active");
+    el.onclick = () => { currentQuestion = i; loadQuestion(); };
+    navigator.appendChild(el);
   }
-  updateNavigatorHighlight();
 }
 
-function loadQuestion(index) {
-  currentQuestion = index;
-  document.getElementById("questionNumber").textContent = `Question ${index + 1}`;
-  const answer = questions[index].answer;
-  document.getElementById("correct").checked = answer === "correct";
-  document.getElementById("incorrect").checked = answer === "incorrect";
-  document.getElementById("unanswered").checked = answer === "unanswered";
-  updateNavigatorHighlight();
-}
+function loadQuestion() {
+  renderNavigator();
+  document.getElementById("questionLabel").textContent = `Question ${currentQuestion + 1}`;
+  const selected = answers[currentQuestion];
 
-function saveAnswer() {
-  const answer = document.querySelector('input[name="answer"]:checked').value;
-  questions[currentQuestion].answer = answer;
+  document.querySelectorAll('input[name="answer"]').forEach(input => {
+    input.checked = input.value === selected;
+  });
 }
 
 function nextQuestion() {
   saveAnswer();
-  if (currentQuestion < questions.length - 1) {
-    loadQuestion(currentQuestion + 1);
-  } else {
-    alert("This is the last question.");
+  if (currentQuestion < totalQuestions - 1) {
+    currentQuestion++;
+    loadQuestion();
   }
 }
 
-function updateNavigatorHighlight() {
-  const nav = document.getElementById("questionNavigator").children;
-  for (let i = 0; i < nav.length; i++) {
-    nav[i].classList.toggle("active", i === currentQuestion);
+function prevQuestion() {
+  saveAnswer();
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    loadQuestion();
+  }
+}
+
+function saveAnswer() {
+  const selected = document.querySelector('input[name="answer"]:checked');
+  if (selected) {
+    answers[currentQuestion] = selected.value;
   }
 }
 
 function submitTest() {
   saveAnswer();
 
-  const correct = questions.filter(q => q.answer === "correct").length;
-  const incorrect = questions.filter(q => q.answer === "incorrect").length;
-  const unanswered = questions.filter(q => q.answer === "unanswered").length;
+  let correct = answers.filter(a => a === "correct").length;
+  let incorrect = answers.filter(a => a === "incorrect").length;
+  let unanswered = answers.filter(a => a === "unanswered").length;
 
-  const score = correct * 4 + incorrect * -1;
-  const attempted = correct + incorrect;
-  const total = attempted + unanswered;
-  const accuracy = attempted ? ((correct / attempted) * 100).toFixed(2) : 0;
+  let score = correct * 4 - incorrect;
+  let accuracy = ((correct / totalQuestions) * 100).toFixed(2);
 
-  document.getElementById("testSection").classList.add("hidden");
-  document.getElementById("resultSection").classList.remove("hidden");
-
+  document.getElementById("testContainer").classList.add("hidden");
+  document.getElementById("resultContainer").classList.remove("hidden");
   document.getElementById("scoreText").textContent = `Score: ${score}`;
   document.getElementById("accuracyText").textContent = `Accuracy: ${accuracy}%`;
 
-  renderChart(correct, incorrect, unanswered);
+  const ctx = document.getElementById("resultChart").getContext("2d");
+  new Chart(ctx, {
+    type: "pie",
+    data: {
+      labels: ["Correct", "Incorrect", "Unanswered"],
+      datasets: [{
+        data: [correct, incorrect, unanswered],
+        backgroundColor: ["#4caf50", "#f44336", "#ffc107"]
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: "bottom"
+        }
+      }
+    }
+  });
 
-  // ✅ Telegram Integration - Frontend Only
-  const BOT_TOKEN = "7651940991:AAGEYiJinRqoCbaUjMirpEXvWFxfr23JVB0"; // 🔁 Replace with your real token
-  const CHAT_ID = "8024677797";     // 🔁 Replace with your Telegram user ID
-
+  // ✅ Telegram Integration (Frontend Only)
+  const BOT_TOKEN = "7651940991:AAGEYiJinRqoCbaUjMirpEXvWFxfr23JVB0";      // 🔁 Replace with your Telegram bot token
+  const CHAT_ID = "8024677797";          // 🔁 Replace with your Telegram user ID
   const topic = document.getElementById("testTitle").textContent;
-  const message = `🧾 *Test Result: ${topic}*\n✅ Score: ${score}\n📊 Accuracy: ${accuracy}%\n☑️ Correct: ${correct}\n ❌ Incorrect: ${incorrect}\n 🔢 Total: ${total}`;
+
+  const message = `🧾 *Test Result: ${topic}*\n✅ Score: ${score}\n📊 Accuracy: ${accuracy}%`;
 
   fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
     method: "POST",
@@ -106,30 +124,7 @@ function submitTest() {
     if (data.ok) {
       alert("Result sent to Telegram!");
     } else {
-      alert("Telegram API error.");
-    }
-  });
-}
-
-function renderChart(correct, incorrect, unanswered) {
-  const ctx = document.getElementById("resultChart").getContext("2d");
-
-  new Chart(ctx, {
-    type: "pie",
-    data: {
-      labels: ["Correct", "Incorrect", "Unanswered"],
-      datasets: [{
-        data: [correct, incorrect, unanswered],
-        backgroundColor: ["#4CAF50", "#F44336", "#FF9800"]
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          position: "bottom"
-        }
-      }
+      alert("Failed to send result.");
     }
   });
 }
