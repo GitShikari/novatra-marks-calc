@@ -91,3 +91,9 @@ canvas {
   margin: 20px auto 0;
   display: block;
 }
+
+#resultChart {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+}
