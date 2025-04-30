@@ -22,9 +22,27 @@
     <div id="questionNavigator"></div>
     <div id="questionBox">
       <p id="questionLabel"></p>
-      <label><input type="radio" name="answer" value="correct" /> Correct</label>
-      <label><input type="radio" name="answer" value="incorrect" /> Incorrect</label>
-      <label><input type="radio" name="answer" value="unanswered" /> Unanswered</label>
+      <div class="option-card">
+  <label>
+    <input type="radio" name="answer" value="correct" />
+    <span>Correct</span>
+  </label>
+</div>
+
+<div class="option-card">
+  <label>
+    <input type="radio" name="answer" value="incorrect" />
+    <span>Incorrect</span>
+  </label>
+</div>
+
+<div class="option-card">
+  <label>
+    <input type="radio" name="answer" value="unanswered" />
+    <span>Unanswered</span>
+  </label>
+</div>
+
     </div>
     <div class="buttons">
       <button onclick="prevQuestion()">Back</button>
