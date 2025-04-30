@@ -23,14 +23,36 @@ function startTest() {
 function renderNavigator() {
   const navigator = document.getElementById("questionNavigator");
   navigator.innerHTML = "";
+
   for (let i = 0; i < totalQuestions; i++) {
     const el = document.createElement("div");
     el.textContent = i + 1;
-    if (i === currentQuestion) el.classList.add("active");
-    el.onclick = () => { currentQuestion = i; loadQuestion(); };
+
+    // Base status class
+    if (answers[i] === "correct") {
+      el.classList.add("navigator-correct");
+    } else if (answers[i] === "incorrect") {
+      el.classList.add("navigator-incorrect");
+    } else if (answers[i] === "unanswered") {
+      el.classList.add("navigator-unanswered");
+    } else {
+      el.classList.add("navigator-unvisited");
+    }
+
+    if (i === currentQuestion) {
+      el.classList.add("navigator-active");
+    }
+
+    el.onclick = () => {
+      saveAnswer();
+      currentQuestion = i;
+      loadQuestion();
+    };
+
     navigator.appendChild(el);
   }
 }
+
 
 function loadQuestion() {
   renderNavigator();
@@ -63,7 +85,9 @@ function saveAnswer() {
   if (selected) {
     answers[currentQuestion] = selected.value;
   }
+  renderNavigator(); // <-- Refresh navigator colors
 }
+
 
 function submitTest() {
   saveAnswer();
