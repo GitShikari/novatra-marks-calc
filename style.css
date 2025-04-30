@@ -127,3 +127,43 @@ canvas {
   gap: 1rem;
 }
 
+.option-card {
+  display: inline-block;
+  width: 45%;
+  background: #f1f6fd;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin: 8px;
+  cursor: pointer;
+  transition: background 0.2s, border 0.2s;
+  position: relative;
+}
+
+.option-card input[type="radio"] {
+  display: none;
+}
+
+.option-card span {
+  display: block;
+  font-size: 16px;
+  font-family: 'Segoe UI', sans-serif;
+  padding-left: 28px;
+  position: relative;
+}
+
+.option-card span::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 2px;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #888;
+  border-radius: 50%;
+  background-color: white;
+}
+
+.option-card input[type="radio"]:checked + span::before {
+  border-color: #324cdd;
+  background-color: #324cdd;
+}
