@@ -50,8 +50,10 @@
       background: #fecaca !important;
     }
     .unanswered {
-      background: #e5e7eb !important;
-    }
+  background: #e5e7eb !important; /* Light gray */
+  opacity: 0.7;
+}
+
     canvas {
       margin-top: 30px;
     }
@@ -109,26 +111,40 @@
     }
 
     function reviewAnswers() {
-      answers.length = currentQuestion - 1;
-      screen.innerHTML = `<h2>Review & Mark Correct</h2>`;
-      answers.forEach((ans, idx) => {
-        const qBlock = document.createElement('div');
-        qBlock.innerHTML = `<strong>Q${idx + 1}</strong>`;
-        for (let i = 1; i <= 4; i++) {
-          const div = document.createElement('div');
-          div.className = 'option';
-          if (ans === i) div.classList.add('selected');
-          if (correctAnswers[idx] === i) div.classList.add('correct');
-          div.innerText = i;
-          div.onclick = () => {
-            correctAnswers[idx] = i;
-            reviewAnswers();
-          };
-          qBlock.appendChild(div);
-        }
-        qBlock.style.marginBottom = "20px";
-        screen.appendChild(qBlock);
-      });
+  const totalQuestions = currentQuestion - 1;
+  screen.innerHTML = `<h2>Review & Mark Correct</h2>`;
+  
+  for (let idx = 0; idx < totalQuestions; idx++) {
+    const ans = answers[idx];
+    const correctAns = correctAnswers[idx];
+    const qBlock = document.createElement('div');
+    qBlock.innerHTML = `<strong>Q${idx + 1}</strong>`;
+
+    for (let i = 1; i <= 4; i++) {
+      const div = document.createElement('div');
+      div.className = 'option';
+      if (typeof ans === 'undefined') {
+        div.classList.add('unanswered');
+      }
+      if (ans === i) div.classList.add('selected');
+      if (correctAns === i) div.classList.add('correct');
+      div.innerText = i;
+      div.onclick = () => {
+        correctAnswers[idx] = i;
+        reviewAnswers();
+      };
+      qBlock.appendChild(div);
+    }
+
+    qBlock.style.marginBottom = "20px";
+    screen.appendChild(qBlock);
+  }
+
+  const btn = document.createElement('button');
+  btn.textContent = 'Submit & View Result';
+  btn.onclick = finalizeResult;
+  screen.appendChild(btn);
+}
       const btn = document.createElement('button');
       btn.textContent = 'Submit & View Result';
       btn.onclick = finalizeResult;
