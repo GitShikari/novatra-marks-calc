@@ -109,6 +109,7 @@
     }
 
     function reviewAnswers() {
+      answers.length = currentQuestion - 1;
       screen.innerHTML = `<h2>Review & Mark Correct</h2>`;
       answers.forEach((ans, idx) => {
         const qBlock = document.createElement('div');
@@ -138,7 +139,7 @@
       let correct = 0, incorrect = 0, unanswered = 0;
       answers.forEach((ans, i) => {
         const correctAns = correctAnswers[i];
-        if (ans == null) unanswered++;
+        if (ans == null || typeof ans === 'undefined') unanswered++;
         else if (ans === correctAns) correct++;
         else incorrect++;
       });
