@@ -183,8 +183,8 @@
           }]
         }
       });
-
-      const message = `🧾 *Test Result: ${topic}*\n✅ Score: ${correct}\n📊 Accuracy: ${accuracy}%\n🔢 Total: ${total}\n☑️ Correct: ${correct}\n❌ Incorrect: ${incorrect}\n🎡 Unanswered: ${unanswered}`;
+      const score = (correct * 4) - incorrect;
+      const message = `🧾 *Test Result: ${topic}*\n✅ Score: ${score}\n📊 Accuracy: ${accuracy}%\n🔢 Total: ${total}\n☑️ Correct: ${correct}\n❌ Incorrect: ${incorrect}\n🎡 Unanswered: ${unanswered}`;
       sendToTelegram(message);
     }
 
