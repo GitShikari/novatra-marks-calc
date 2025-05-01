@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Digital Answer Sheet</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      text-align: center;
+      color: #333;
+    }
+    button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      background: #4f46e5;
+      color: white;
+      margin-top: 20px;
+    }
+    .option {
+      background: #f0f0f0;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 12px;
+      cursor: pointer;
+      text-align: center;
+    }
+    .option.selected {
+      background: #c7d2fe;
+    }
+    .option.correct { background-color: #bbf7d0 !important; }
+    .option.incorrect { background-color: #fecaca !important; }
+    .option.unanswered { background-color: #e5e7eb !important; }
+    canvas {
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="app">
+    <h1>Answer Sheet</h1>
+    <div id="screen"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    let topic = '';
+    let currentQuestion = 1;
+    const answers = [];
+
+    const screen = document.getElementById('screen');
+
+    function renderStartScreen() {
+      screen.innerHTML = `
+        <h2>Enter Test Name</h2>
+        <input id="testName" placeholder="Test Topic" style="width:100%;padding:10px;border-radius:8px;margin-top:10px;">
+        <button onclick="startTest()">Start</button>
+      `;
+    }
+
+    function startTest() {
+      topic = document.getElementById('testName').value.trim();
+      if (!topic) return alert("Please enter a test name.");
+      renderAnswerScreen();
+    }
+
+    function renderAnswerScreen() {
+      screen.innerHTML = `
+        <h2>Q${currentQuestion}</h2>
+        ${[1,2,3,4].map(opt => `
+          <div class="option ${answers[currentQuestion - 1] === opt ? 'selected' : ''}" onclick="selectOption(${opt})">
+            ${opt}
+          </div>`).join('')}
+        <button onclick="nextQuestion()">Next</button>
+        ${answers.length > 0 ? `<button onclick="reviewAnswers()" style="margin-left:10px;background:#6b7280;">Review & Submit</button>` : ''}
+      `;
+    }
+
+    function selectOption(opt) {
+      answers[currentQuestion - 1] = opt;
+      renderAnswerScreen();
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      renderAnswerScreen();
+    }
+
+    function reviewAnswers() {
+      screen.innerHTML = `<h2>Review & Evaluate</h2>`;
+      answers.forEach((ans, idx) => {
+        const qBlock = document.createElement('div');
+        qBlock.innerHTML = `<strong>Q${idx + 1}</strong>`;
+        for (let i = 1; i <= 4; i++) {
+          const div = document.createElement('div');
+          div.className = 'option' + (ans === i ? ' selected' : '');
+          div.innerText = i;
+          qBlock.appendChild(div);
+        }
+
+        // Add correct answer selector
+        const label = document.createElement('label');
+        label.innerText = "Mark correct:";
+        const select = document.createElement('select');
+        select.innerHTML = `<option value="">--</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>`;
+        select.value = evaluationAnswers[idx] ?? '';
+        select.onchange = () => {
+          evaluationAnswers[idx] = parseInt(select.value) || null;
+        };
+        qBlock.appendChild(label);
+        qBlock.appendChild(select);
+
+        qBlock.style.marginBottom = "20px";
+        screen.appendChild(qBlock);
+      });
+      const btn = document.createElement('button');
+      btn.textContent = 'Submit & View Result';
+      btn.onclick = finalizeResult;
+      screen.appendChild(btn);
+    }
+
+    const evaluationAnswers = [];
+
+    function finalizeResult() {
+      let correct = 0, incorrect = 0, unanswered = 0;
+      answers.forEach((ans, i) => {
+        const correctAns = evaluationAnswers[i];
+        if (ans == null) unanswered++;
+        else if (ans === correctAns) correct++;
+        else incorrect++;
+      });
+
+      const total = answers.length;
+      const accuracy = ((correct / total) * 100).toFixed(2);
+
+      screen.innerHTML = `
+        <h2>Result Summary</h2>
+        <p>✅ Correct: ${correct}</p>
+        <p>❌ Incorrect: ${incorrect}</p>
+        <p>🎡 Unanswered: ${unanswered}</p>
+        <p>📊 Accuracy: ${accuracy}%</p>
+        <canvas id="resultChart" width="400" height="400"></canvas>
+      `;
+
+      const ctx = document.getElementById('resultChart');
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Correct', 'Incorrect', 'Unanswered'],
+          datasets: [{
+            data: [correct, incorrect, unanswered],
+            backgroundColor: ['#34d399', '#f87171', '#d1d5db']
+          }]
+        }
+      });
+
+      const message = `🧾 *Test Result: ${topic}*\n✅ Score: ${correct}\n📊 Accuracy: ${accuracy}%\n🔢 Total: ${total}\n☑️ Correct: ${correct}\n❌ Incorrect: ${incorrect}\n🎡 Unanswered: ${unanswered}`;
+      sendToTelegram(message);
+    }
+
+    function sendToTelegram(msg) {
+      const botToken = 'YOUR_BOT_TOKEN';
+      const chatId = 'YOUR_CHAT_ID';
+      fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: msg,
+          parse_mode: 'Markdown'
+        })
+      });
+    }
+
+    renderStartScreen();
+  </script>
+</body>
+</html>
