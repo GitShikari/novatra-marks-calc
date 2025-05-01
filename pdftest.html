@@ -40,12 +40,18 @@
       cursor: pointer;
       text-align: center;
     }
-    .option.selected {
-      background: #c7d2fe;
+    .selected {
+      background: #c7d2fe !important;
     }
-    .option.correct { background-color: #bbf7d0 !important; }
-    .option.incorrect { background-color: #fecaca !important; }
-    .option.unanswered { background-color: #e5e7eb !important; }
+    .correct {
+      background: #bbf7d0 !important;
+    }
+    .incorrect {
+      background: #fecaca !important;
+    }
+    .unanswered {
+      background: #e5e7eb !important;
+    }
     canvas {
       margin-top: 30px;
     }
@@ -62,6 +68,7 @@
     let topic = '';
     let currentQuestion = 1;
     const answers = [];
+    const correctAnswers = [];
 
     const screen = document.getElementById('screen');
 
@@ -102,33 +109,22 @@
     }
 
     function reviewAnswers() {
-      screen.innerHTML = `<h2>Review & Evaluate</h2>`;
+      screen.innerHTML = `<h2>Review & Mark Correct</h2>`;
       answers.forEach((ans, idx) => {
         const qBlock = document.createElement('div');
         qBlock.innerHTML = `<strong>Q${idx + 1}</strong>`;
         for (let i = 1; i <= 4; i++) {
           const div = document.createElement('div');
-          div.className = 'option' + (ans === i ? ' selected' : '');
+          div.className = 'option';
+          if (ans === i) div.classList.add('selected');
+          if (correctAnswers[idx] === i) div.classList.add('correct');
           div.innerText = i;
+          div.onclick = () => {
+            correctAnswers[idx] = i;
+            reviewAnswers();
+          };
           qBlock.appendChild(div);
         }
-
-        // Add correct answer selector
-        const label = document.createElement('label');
-        label.innerText = "Mark correct:";
-        const select = document.createElement('select');
-        select.innerHTML = `<option value="">--</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>`;
-        select.value = evaluationAnswers[idx] ?? '';
-        select.onchange = () => {
-          evaluationAnswers[idx] = parseInt(select.value) || null;
-        };
-        qBlock.appendChild(label);
-        qBlock.appendChild(select);
-
         qBlock.style.marginBottom = "20px";
         screen.appendChild(qBlock);
       });
@@ -138,19 +134,17 @@
       screen.appendChild(btn);
     }
 
-    const evaluationAnswers = [];
-
     function finalizeResult() {
       let correct = 0, incorrect = 0, unanswered = 0;
       answers.forEach((ans, i) => {
-        const correctAns = evaluationAnswers[i];
+        const correctAns = correctAnswers[i];
         if (ans == null) unanswered++;
         else if (ans === correctAns) correct++;
         else incorrect++;
       });
 
       const total = answers.length;
-      const accuracy = ((correct / total) * 100).toFixed(2);
+      const accuracy = total > 0 ? ((correct / total) * 100).toFixed(2) : 0;
 
       screen.innerHTML = `
         <h2>Result Summary</h2>
@@ -178,8 +172,8 @@
     }
 
     function sendToTelegram(msg) {
-      const botToken = 'YOUR_BOT_TOKEN';
-      const chatId = 'YOUR_CHAT_ID';
+      const botToken = '7651940991:AAGEYiJinRqoCbaUjMirpEXvWFxfr23JVB0';
+      const chatId = '8024677797';
       fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
