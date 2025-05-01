@@ -157,6 +157,7 @@
       const total = answers.length;
       const tacc = correct + incorrect;
       const accuracy = total > 0 ? ((correct / tacc) * 100).toFixed(2) : 0;
+      const unanswered = total - tacc;
 
       screen.innerHTML = `
         <h2>Result Summary</h2>
